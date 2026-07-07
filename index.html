@@ -172,25 +172,25 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 26px; padding: 24px; cursor: pointer;
       background: radial-gradient(1100px 600px at 50% -10%, #dcebff 0%, var(--color-fondo) 55%, #f5f9ff 100%);
-      animation: intro-overlay 3.1s ease forwards;
+      animation: intro-overlay 4s ease forwards;
     }
     .intro.fin { display: none; }
     .intro img {
       width: 150px; height: 150px; display: block;
       border-radius: 50%; background: #fff;
       box-shadow: 0 12px 30px rgba(37,99,235,0.20);
-      animation: intro-logo 3.1s cubic-bezier(.55,0,.7,1) forwards;
+      animation: intro-logo 4s cubic-bezier(.55,0,.7,1) forwards;
     }
     .intro-texto {
       text-align: center; max-width: 320px;
-      animation: intro-texto 3.1s ease forwards;
+      animation: intro-texto 4s ease forwards;
     }
     .intro-texto .bienvenida { font-size: 24px; font-weight: 700; color: var(--color-texto); }
     .intro-texto .gracias { font-size: 15px; color: var(--color-texto-suave); margin-top: 6px; }
     .intro-saltar {
       position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
       font-size: 12px; color: var(--color-texto-suave); opacity: .7;
-      animation: intro-texto 3.1s ease forwards;
+      animation: intro-texto 4s ease forwards;
     }
 
     /* El logo aparece, se mantiene y luego RUEDA hacia la derecha girando */
@@ -457,7 +457,7 @@
       // Tocar/clic = saltar la intro.
       intro.addEventListener("click", quitar);
       // Red de seguridad por si el navegador no lanza animationend.
-      setTimeout(quitar, 3400);
+      setTimeout(quitar, 4300);
     })();
   </script>
 
