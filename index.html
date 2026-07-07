@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pósteres QAC · CAI 2026</title>
+  <meta name="description" content="Pósteres del grupo Química Analítica de Contaminantes (QAC) presentados en el CAI 2026, Salamanca." />
+  <meta name="theme-color" content="#eaf2ff" />
+
+  <!-- ============================================================
+       COMO ANADIR UN POSTER (lo unico que hay que tocar normalmente):
+       1) Sube su PDF con un nombre claro, p.ej.  poster-apellido.pdf
+          (opcional) una imagen de previsualizacion  poster-apellido.jpg
+       2) Baja hasta el array POSTERS (dentro del <script>) y anade UNA linea:
+            { autor: "Nombre Apellido", titulo: "Titulo del poster",
+              pdf: "poster-apellido.pdf", jpg: "poster-apellido.jpg" },
+          - "jpg" es OPCIONAL: si no la pones, el boton abre el PDF directamente.
+          - El orden alfabetico se calcula solo. Si quieres forzar el orden
+            (p.ej. por apellido) anade  orden: "Apellido, Nombre"  a esa linea.
+       ============================================================ -->
+
+  <style>
+    :root {
+      --color-fondo: #eaf2ff;
+      --color-tarjeta: #ffffff;
+      --color-acento: #2563eb;
+      --color-acento-suave: #eff5ff;
+      --color-texto: #0f2747;
+      --color-texto-suave: #5b7290;
+      --color-borde: #dbe6f5;
+      --radio: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1100px 600px at 50% -10%, #dcebff 0%, var(--color-fondo) 55%, #f5f9ff 100%);
+      color: var(--color-texto);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 16px 48px;
+    }
+
+    .tarjeta {
+      width: 100%;
+      max-width: 460px;
+      background: var(--color-tarjeta);
+      border: 1px solid var(--color-borde);
+      border-radius: var(--radio);
+      padding: 18px 22px 26px;
+      box-shadow: 0 18px 50px rgba(37,99,235,0.12);
+      text-align: center;
+    }
+
+    /* Conmutador de idioma */
+    .lang { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 8px; }
+    .lang button {
+      background: #fff;
+      border: 1px solid var(--color-borde);
+      color: var(--color-texto-suave);
+      border-radius: 8px;
+      padding: 4px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .12s ease;
+    }
+    .lang button.activo { background: var(--color-acento); color: #fff; border-color: var(--color-acento); }
+
+    /* Cabecera: logo QAC (grupo) + logo CAI (congreso) */
+    .logo-qac { display: block; margin: 2px auto 6px; }
+    .logo-qac img { width: 100%; max-width: 128px; height: auto; display: block; margin: 0 auto; }
+
+    .logo-cai { display: block; text-decoration: none; margin: 4px auto 18px; }
+    .logo-cap {
+      display: block; font-size: 11px; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--color-texto-suave); margin-bottom: 8px;
+    }
+    .logo-cai img { width: 100%; max-width: 190px; height: auto; display: block; margin: 0 auto; }
+
+    h1 { font-size: 21px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: var(--color-texto-suave); font-size: 14px; margin-bottom: 22px; }
+
+    .botones { display: flex; flex-direction: column; gap: 12px; }
+
+    .boton {
+      display: flex; align-items: center; gap: 14px;
+      width: 100%; padding: 14px 16px;
+      border-radius: 12px;
+      background: #f7faff;
+      border: 1px solid var(--color-borde);
+      color: var(--color-texto);
+      text-decoration: none;
+      cursor: pointer; text-align: left;
+      font-family: inherit;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+    }
+    .boton:hover, .boton:active {
+      transform: translateY(-2px);
+      border-color: var(--color-acento);
+      background: var(--color-acento-suave);
+      box-shadow: 0 8px 18px rgba(37,99,235,0.12);
+    }
+    .boton .icono {
+      width: 40px; height: 40px; flex: 0 0 40px;
+      border-radius: 10px; background: #4f46e5;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .boton .icono svg { width: 22px; height: 22px; }
+    .boton .texto { line-height: 1.3; flex: 1; }
+    .boton .texto .autor { display: block; font-size: 16px; font-weight: 700; }
+    .boton .texto .titulo {
+      display: block; font-weight: 400; font-size: 13px;
+      color: var(--color-texto-suave); margin-top: 3px;
+    }
+
+    .vacio { color: var(--color-texto-suave); font-size: 14px; padding: 24px 8px; }
+
+    footer { margin-top: 24px; font-size: 11px; color: var(--color-texto-suave); }
+
+    /* ---------- Modal del poster ---------- */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,39,71,0.45);
+      backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center;
+      padding: 16px; z-index: 50;
+    }
+    .overlay.abierto { display: flex; }
+    .modal {
+      background: var(--color-tarjeta);
+      border: 1px solid var(--color-borde);
+      border-radius: 16px;
+      width: 100%; max-width: 760px; max-height: 92vh;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 24px 60px rgba(15,39,71,0.30);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 16px; border-bottom: 1px solid var(--color-borde);
+    }
+    .modal-header h2 { font-size: 16px; line-height: 1.3; text-align: left; }
+    .cerrar {
+      background: transparent; border: none; color: var(--color-texto-suave);
+      font-size: 26px; line-height: 1; cursor: pointer; padding: 0 4px; flex: 0 0 auto;
+    }
+    .cerrar:hover { color: var(--color-texto); }
+    .modal-body {
+      flex: 1; overflow: auto; background: #f1f6ff;
+      min-height: 220px; padding: 12px; text-align: center;
+    }
+    .modal-body img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; box-shadow: 0 6px 18px rgba(15,39,71,0.15); }
+    .sin-preview { color: var(--color-texto-suave); font-size: 14px; text-align: center; padding: 40px 16px; }
+    .modal-footer {
+      display: flex; gap: 10px; padding: 12px 16px;
+      border-top: 1px solid var(--color-borde);
+    }
+    .modal-footer a {
+      flex: 1; text-align: center; text-decoration: none;
+      padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px;
+      color: #fff;
+    }
+    .btn-pantalla  { background: #4f46e5; }
+    .btn-descargar { background: var(--color-acento); }
+    @media (max-width: 440px) { .modal-footer { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <main class="tarjeta">
+
+    <!-- Conmutador de idioma -->
+    <div class="lang">
+      <button type="button" data-lang="es">ES</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+
+    <!-- Logo del grupo QAC -->
+    <div class="logo-qac">
+      <img src="Logo-QAC.jpg" alt="Química Analítica de Contaminantes (QAC)" />
+    </div>
+
+    <!-- Logo del congreso CAI 2026 (enlaza a la web oficial) -->
+    <a class="logo-cai" href="https://cai2026.es/" target="_blank" rel="noopener" title="CAI 2026 · Salamanca">
+      <span class="logo-cap" data-i18n="congreso_caption">Pósteres presentados en</span>
+      <img src="cai2026-logo.png" alt="1º Congreso de Análisis Instrumental — CAI 2026, Salamanca" />
+    </a>
+
+    <h1 data-i18n="titulo_pagina">Pósteres del grupo QAC</h1>
+    <p class="subtitle" data-i18n="subtitulo">Elige un póster para verlo o descargarlo</p>
+
+    <nav class="botones" id="lista-posters"></nav>
+
+    <footer data-i18n="footer">Química Analítica de Contaminantes · Universidad de Almería</footer>
+  </main>
+
+  <!-- ---------- Modal del poster ---------- -->
+  <div class="overlay" id="overlay-poster" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-titulo">Póster</h2>
+        <button class="cerrar" id="cerrar-poster" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="poster-img" src="" alt="Póster" />
+        <div class="sin-preview" id="poster-sin-preview" style="display:none" data-i18n="poster_missing">
+          Sin previsualización. Puedes abrir o descargar el PDF.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="btn-pantalla" id="btn-ver" href="#" target="_blank" rel="noopener" data-i18n="poster_view">Ver a pantalla completa</a>
+        <a class="btn-descargar" id="btn-descargar" href="#" download data-i18n="poster_download">Descargar PDF</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    //  LISTA DE POSTERES  ← esto es lo unico que se edita al dia a dia
+    //  Cada poster: { autor, titulo, pdf, jpg (opcional), orden (opcional) }
+    // ============================================================
+    var POSTERS = [
+      {
+        autor: "José Raúl Belmonte-Sánchez",
+        titulo: "Análisis multivariante automatizado: estudio comparativo de LLMs de última generación",
+        pdf: "poster-belmonte-sanchez.pdf",
+        jpg: "poster-belmonte-sanchez.jpg"
+      }
+      // , { autor: "...", titulo: "...", pdf: "poster-....pdf", jpg: "poster-....jpg" }
+    ];
+
+    // ===================== TEXTOS (ES / EN) =====================
+    var I18N = {
+      es: {
+        congreso_caption: "Pósteres presentados en",
+        titulo_pagina: "Pósteres del grupo QAC",
+        subtitulo: "Elige un póster para verlo o descargarlo",
+        poster_view: "Ver a pantalla completa",
+        poster_download: "Descargar PDF",
+        poster_missing: "Sin previsualización. Puedes abrir o descargar el PDF.",
+        vacio: "Aún no hay pósteres publicados.",
+        footer: "Química Analítica de Contaminantes · Universidad de Almería"
+      },
+      en: {
+        congreso_caption: "Posters presented at",
+        titulo_pagina: "QAC group posters",
+        subtitulo: "Choose a poster to view or download it",
+        poster_view: "Open fullscreen",
+        poster_download: "Download PDF",
+        poster_missing: "No preview available. You can open or download the PDF.",
+        vacio: "No posters published yet.",
+        footer: "Analytical Chemistry of Pollutants · University of Almería"
+      }
+    };
+
+    // Icono de poster (mismo para todos los botones)
+    var ICONO_POSTER =
+      '<svg viewBox="0 0 24 24" fill="#fff"><path d="M21 5v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zm-2 0H5v9.59l3.3-3.3 4 4 3-3L19 16.59V5zM7.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>';
+
+    // Slug para el nombre del evento de analitica (quita acentos y deja solo a-z0-9)
+    function slug(txt) {
+      return txt.normalize("NFD").replace(/[̀-ͯ]/g, "")
+                .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+
+    // ===================== RENDER DE LA LISTA =====================
+    var lista = document.getElementById("lista-posters");
+
+    function ordenarPosters() {
+      return POSTERS.slice().sort(function (a, b) {
+        var ka = a.orden || a.autor, kb = b.orden || b.autor;
+        return ka.localeCompare(kb, "es", { sensitivity: "base" });
+      });
+    }
+
+    function pintarLista() {
+      lista.innerHTML = "";
+      var ordenados = ordenarPosters();
+      if (!ordenados.length) {
+        var vacio = document.createElement("p");
+        vacio.className = "vacio";
+        vacio.setAttribute("data-i18n", "vacio");
+        lista.appendChild(vacio);
+        return;
+      }
+      ordenados.forEach(function (p) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "boton";
+        btn.setAttribute("data-evento", "poster-" + slug(p.autor));
+        btn.innerHTML =
+          '<span class="icono">' + ICONO_POSTER + '</span>' +
+          '<span class="texto">' +
+            '<span class="autor"></span>' +
+            '<span class="titulo"></span>' +
+          '</span>';
+        btn.querySelector(".autor").textContent = p.autor;
+        btn.querySelector(".titulo").textContent = p.titulo;
+        btn.addEventListener("click", function () { abrirPoster(p); });
+        lista.appendChild(btn);
+      });
+    }
+
+    // ===================== MODAL DEL POSTER =====================
+    var overlay = document.getElementById("overlay-poster");
+    var modalTitulo = document.getElementById("modal-titulo");
+    var img = document.getElementById("poster-img");
+    var sinPreview = document.getElementById("poster-sin-preview");
+    var btnVer = document.getElementById("btn-ver");
+    var btnDescargar = document.getElementById("btn-descargar");
+
+    function abrirPoster(p) {
+      modalTitulo.textContent = p.autor;
+      btnVer.setAttribute("href", p.pdf);
+      btnDescargar.setAttribute("href", p.pdf);
+      // Previsualizacion opcional
+      if (p.jpg) {
+        img.style.display = "block";
+        sinPreview.style.display = "none";
+        img.setAttribute("src", p.jpg);
+      } else {
+        img.style.display = "none";
+        img.removeAttribute("src");
+        sinPreview.style.display = "block";
+      }
+      overlay.classList.add("abierto");
+      contarEvento("poster-" + slug(p.autor));
+    }
+    function cerrar() { overlay.classList.remove("abierto"); }
+    document.getElementById("cerrar-poster").addEventListener("click", cerrar);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) cerrar(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") cerrar(); });
+
+    // Si la imagen de previsualizacion no carga, se muestra el aviso.
+    img.addEventListener("error", function () {
+      if (img.getAttribute("src")) {
+        img.style.display = "none";
+        sinPreview.style.display = "block";
+      }
+    });
+
+    // ===================== IDIOMA =====================
+    function aplicarIdioma(lang) {
+      var t = I18N[lang] || I18N.es;
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        var clave = el.getAttribute("data-i18n");
+        if (t[clave] != null) el.textContent = t[clave];
+      });
+      document.querySelectorAll(".lang button").forEach(function (b) {
+        b.classList.toggle("activo", b.getAttribute("data-lang") === lang);
+      });
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+    }
+
+    (function () {
+      var guardado = null;
+      try { guardado = localStorage.getItem("lang"); } catch (e) {}
+      var nav = (navigator.language || "es").slice(0, 2).toLowerCase();
+      aplicarIdioma(guardado || (nav === "en" ? "en" : "es"));
+    })();
+
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.addEventListener("click", function () { aplicarIdioma(b.getAttribute("data-lang")); });
+    });
+
+    // ============= ANALITICA: conteo por poster (GoatCounter) =============
+    function contarEvento(nombre) {
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path: "boton-" + nombre, title: "Click: " + nombre, event: true });
+      }
+    }
+
+    // Pintar la lista al arrancar
+    pintarLista();
+  </script>
+
+  <!-- Analitica GoatCounter (sin cookies, sin banner). Panel actual: https://joseraulbs.goatcounter.com
+       Si el grupo crea su propio panel, cambia la URL de data-goatcounter y count por la nueva. -->
+  <script data-goatcounter="https://joseraulbs.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
