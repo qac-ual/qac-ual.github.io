@@ -165,9 +165,72 @@
     .btn-pantalla  { background: #4f46e5; }
     .btn-descargar { background: var(--color-acento); }
     @media (max-width: 440px) { .modal-footer { flex-direction: column; } }
+
+    /* ---------- Intro de bienvenida (se reproduce al cargar) ---------- */
+    .intro {
+      position: fixed; inset: 0; z-index: 100; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 26px; padding: 24px; cursor: pointer;
+      background: radial-gradient(1100px 600px at 50% -10%, #dcebff 0%, var(--color-fondo) 55%, #f5f9ff 100%);
+      animation: intro-overlay 3.1s ease forwards;
+    }
+    .intro.fin { display: none; }
+    .intro img {
+      width: 150px; height: 150px; display: block;
+      border-radius: 50%; background: #fff;
+      box-shadow: 0 12px 30px rgba(37,99,235,0.20);
+      animation: intro-logo 3.1s cubic-bezier(.55,0,.7,1) forwards;
+    }
+    .intro-texto {
+      text-align: center; max-width: 320px;
+      animation: intro-texto 3.1s ease forwards;
+    }
+    .intro-texto .bienvenida { font-size: 24px; font-weight: 700; color: var(--color-texto); }
+    .intro-texto .gracias { font-size: 15px; color: var(--color-texto-suave); margin-top: 6px; }
+    .intro-saltar {
+      position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
+      font-size: 12px; color: var(--color-texto-suave); opacity: .7;
+      animation: intro-texto 3.1s ease forwards;
+    }
+
+    /* El logo aparece, se mantiene y luego RUEDA hacia la derecha girando */
+    @keyframes intro-logo {
+      0%   { opacity: 0; transform: translateX(0) scale(.4) rotate(-20deg); }
+      14%  { opacity: 1; transform: translateX(0) scale(1) rotate(0deg); }
+      60%  { opacity: 1; transform: translateX(0) scale(1) rotate(0deg); }
+      100% { opacity: 1; transform: translateX(125vw) scale(1) rotate(1080deg); }
+    }
+    @keyframes intro-texto {
+      0%   { opacity: 0; transform: translateY(14px); }
+      16%  { opacity: 0; transform: translateY(14px); }
+      30%  { opacity: 1; transform: translateY(0); }
+      55%  { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 0; }
+    }
+    @keyframes intro-overlay {
+      0%, 82% { opacity: 1; }
+      100%    { opacity: 0; visibility: hidden; }
+    }
+
+    /* Accesibilidad: quien pide menos movimiento no ve la intro */
+    @media (prefers-reduced-motion: reduce) {
+      .intro { display: none; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ---------- Intro de bienvenida (logo que rueda) ---------- -->
+  <div class="intro" id="intro" title="Tocar para saltar">
+    <img src="Logo-QAC.jpg" alt="Química Analítica de Contaminantes (QAC)" />
+    <div class="intro-texto">
+      <div class="bienvenida" data-i18n="intro_bienvenida">Bienvenido/a al grupo QAC</div>
+      <div class="gracias" data-i18n="intro_gracias">Gracias por elegirnos</div>
+    </div>
+    <div class="intro-saltar" data-i18n="intro_saltar">Toca para saltar</div>
+  </div>
+
   <main class="tarjeta">
 
     <!-- Conmutador de idioma -->
@@ -233,6 +296,9 @@
     // ===================== TEXTOS (ES / EN) =====================
     var I18N = {
       es: {
+        intro_bienvenida: "Bienvenido/a al grupo QAC",
+        intro_gracias: "Gracias por elegirnos",
+        intro_saltar: "Toca para saltar",
         congreso_caption: "Pósteres presentados en",
         titulo_pagina: "Pósteres del grupo QAC",
         subtitulo: "Elige un póster para verlo o descargarlo",
@@ -243,6 +309,9 @@
         footer: "Química Analítica de Contaminantes · Universidad de Almería"
       },
       en: {
+        intro_bienvenida: "Welcome to the QAC group",
+        intro_gracias: "Thanks for choosing us",
+        intro_saltar: "Tap to skip",
         congreso_caption: "Posters presented at",
         titulo_pagina: "QAC group posters",
         subtitulo: "Choose a poster to view or download it",
@@ -374,6 +443,22 @@
 
     // Pintar la lista al arrancar
     pintarLista();
+
+    // ===================== INTRO DE BIENVENIDA =====================
+    // Al terminar la animacion (o al tocar), se retira la capa para no bloquear los clics.
+    (function () {
+      var intro = document.getElementById("intro");
+      if (!intro) return;
+      function quitar() { intro.classList.add("fin"); }
+      // Se retira sola cuando acaba la animacion del overlay.
+      intro.addEventListener("animationend", function (e) {
+        if (e.animationName === "intro-overlay") quitar();
+      });
+      // Tocar/clic = saltar la intro.
+      intro.addEventListener("click", quitar);
+      // Red de seguridad por si el navegador no lanza animationend.
+      setTimeout(quitar, 3400);
+    })();
   </script>
 
   <!-- Analitica GoatCounter (sin cookies, sin banner). Panel actual: https://joseraulbs.goatcounter.com
