@@ -1,0 +1,10 @@
+# Solo se publican en GitHub los archivos de la WEB.
+# Todo lo demas (scripts .py, originales, respaldos, carpeta qr/, CLAUDE.md) se
+# queda en local. Regla: ignorar todo y re-incluir solo lo que forma la web.
+/*
+!/.gitignore
+!/index.html
+!/Logo-QAC.jpg
+!/cai2026-logo.png
+!/poster-*.pdf
+!/poster-*.jpg
