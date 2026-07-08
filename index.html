@@ -15,8 +15,9 @@
             { autor: "Nombre Apellido", titulo: "Titulo del poster",
               pdf: "poster-apellido.pdf", jpg: "poster-apellido.jpg" },
           - "jpg" es OPCIONAL: si no la pones, el boton abre el PDF directamente.
-          - El orden alfabetico se calcula solo. Si quieres forzar el orden
-            (p.ej. por apellido) anade  orden: "Apellido, Nombre"  a esa linea.
+          - "orden" (recomendado): pon  orden: "Apellido, Nombre"  y la lista se
+            ordena por apellido; ademas el boton MUESTRA ese texto (apellido primero).
+            Sin "orden", se ordena y se muestra por "autor" (Nombre Apellido).
        ============================================================ -->
 
   <style>
@@ -286,11 +287,19 @@
     var POSTERS = [
       {
         autor: "José Raúl Belmonte-Sánchez",
+        orden: "Belmonte-Sánchez, José Raúl",
         titulo: "Análisis multivariante automatizado: estudio comparativo de LLMs de última generación",
         pdf: "poster-belmonte-sanchez.pdf",
         jpg: "poster-belmonte-sanchez.jpg"
+      },
+      {
+        autor: "Araceli Rivera Pérez",
+        orden: "Rivera Pérez, Araceli",
+        titulo: "Towards greener and miniaturized paprika metabolomics: LC-HRMS-based multiclass profiling strategy for cultivar discrimination",
+        pdf: "poster-rivera-perez.pdf",
+        jpg: "poster-rivera-perez.jpg"
       }
-      // , { autor: "...", titulo: "...", pdf: "poster-....pdf", jpg: "poster-....jpg" }
+      // , { autor: "...", orden: "Apellido, Nombre", titulo: "...", pdf: "poster-....pdf", jpg: "poster-....jpg" }
     ];
 
     // ===================== TEXTOS (ES / EN) =====================
@@ -364,7 +373,7 @@
             '<span class="autor"></span>' +
             '<span class="titulo"></span>' +
           '</span>';
-        btn.querySelector(".autor").textContent = p.autor;
+        btn.querySelector(".autor").textContent = p.orden || p.autor;
         btn.querySelector(".titulo").textContent = p.titulo;
         btn.addEventListener("click", function () { abrirPoster(p); });
         lista.appendChild(btn);
